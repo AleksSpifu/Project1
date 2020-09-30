@@ -12,6 +12,7 @@ void task3();
 void diceTasks();
 void rollDice(std::vector <int>& diceVec, std::vector <int>& hold);
 void holdDice(std::vector <int>& diceVec, std::vector <int>& hold, int MaxDi);
+void checkForSixesAndPairs(std::vector <int>& diceVec);
 
 
 int main() {
@@ -21,7 +22,7 @@ int main() {
 		system("cls");
 
 		std::cout << "Welcome to my weeklies! You can select which task you would like to see.\n1. Make a function that converts lower case letters to capitals. Use data type Char.\n";
-		std::cout << "2. Make a 10x10 game of chasing the G.\n3. Make a program that can hold names and phone numbers. etc.\n4. Dice tasks.\n5 or Space. Exit the program.\nPlease enter your selection:\n";
+		std::cout << "2. Make a 10x10 game of chasing the G.\n3. Make a program that can hold names and phone numbers. etc.\n4. Dice tasks.\n5 or Escape. Exit the program.\nPlease enter your selection:\n";
 		switch (_getch()) {
 		case '1':
 			task1();
@@ -38,7 +39,7 @@ int main() {
 		case '5':
 			programFinished = true;
 			break;
-		case ' ':
+		case 27:
 			programFinished = true;
 			break;
 		default:
@@ -196,7 +197,7 @@ void task2() {
 void task3() {
 	struct people {
 		std::string name;
-		int number;
+		int number = 0;
 	};
 	std::vector <people> person(10);
 	std::cout << "List of all people: \n";
@@ -253,7 +254,7 @@ void task3() {
 				std::cout << "Empty.\n";
 			}
 		}
-		std::cout << "Either select a number to view/edit, or hit space to exit.\n";
+		std::cout << "Either select a number to view/edit, or hit escape to exit.\n";
 		bool acceptedInput = false;
 		int selection = 10;
 		while (!acceptedInput) {
@@ -298,7 +299,7 @@ void task3() {
 				selection = 9;
 				acceptedInput = true;
 				break;
-			case ' ':
+			case 27:
 				acceptedInput = true;
 				finishedWithTask = true;
 				break;
@@ -310,21 +311,21 @@ void task3() {
 		while (selection >= 0 && selection <= 9) {
 			system("cls");
 			std::cout << "Name: " << person[selection].name << "\nNumber: " << person[selection].number << "\n";
-			std::cout << "Press P to edit phone number, N to edit name, or Space to go back\n";
+			std::cout << "Press P to edit phone number, N to edit name, or Escape to go back\n";
 			switch (tolower(_getch()))
 			{
 			case 'p':
 				std::cout << "Please write the new number: ";
 				std::cin >> person[selection].number;
+				std::cin.ignore(32767, '\n');
 				std::cin.clear();
 				break;
 			case 'n':
 				std::cout << "Please write the new name: ";
-				std::cin.clear();
-				std::cin.ignore(100, '\n');
+				
 				std::getline(std::cin, person[selection].name);
 				break;
-			case ' ':
+			case 27:
 				selection = 10;
 				break;
 			default:
@@ -354,9 +355,10 @@ void diceTasks() {
 			}
 		}
 		system("cls");
-		std::cout << "Welcome to the dice thing. \nPress enter to roll new dice, or Space to go back.\n";
+		std::cout << "Welcome to the dice thing. \nPress enter to roll new dice, or Escape to go back.\n";
 		if (rolled) {
 			std::cout << "Press H to hold dice.\n";
+			checkForSixesAndPairs(dice);
 		}
 		if (!doneWithTask && dice[0] != 0) {
 			if (rolled) {
@@ -392,7 +394,7 @@ void diceTasks() {
 			rollDice(dice, heldDice);
 			doneWithTask = false;
 			break;
-		case ' ':
+		case 27:
 			doneWithTask = true;
 			break;
 		case 'h':
@@ -401,6 +403,7 @@ void diceTasks() {
 		default:
 			break;
 		}
+		
 		
 	}
 	
@@ -411,7 +414,7 @@ void holdDice(std::vector <int>& diceVec, std::vector <int>& hold, int MaxDi) {
 	bool finished = false;
 	while (!finished) {
 		system("cls");
-		std::cout << "Which dice would you like to hold? Or press Space to finish holding.\n";
+		std::cout << "Which dice would you like to hold? Or press Escape or Enter to finish holding.\n";
 		std::cout << "\n";
 		for (int i = 0; i < diceVec.size(); i++) {
 			std::cout << spacer;
@@ -485,7 +488,10 @@ void holdDice(std::vector <int>& diceVec, std::vector <int>& hold, int MaxDi) {
 				hold[4] = diceVec[4];
 			}
 			break;
-		case ' ':
+		case '\r':
+			finished = true;
+			break;
+		case 27:
 			finished = true;
 			break;
 		default:
@@ -500,6 +506,31 @@ void rollDice(std::vector <int>& diceVec, std::vector <int>& hold) {
 	for (int i = 0; i < diceVec.size(); i++) {
 		if (hold[i] == 0) {
 			diceVec[i] = (rand() % 6) + 1;
+		}
+	}
+}
+
+void checkForSixesAndPairs(std::vector <int>& diceVec) {
+	std::vector <int> diceChecks(7, 0);
+	for (int i = 0; i < diceVec.size(); i++) {
+		diceChecks[diceVec[i]]++;
+	}
+	std::cout << "You have " << diceChecks[6] << " six";
+	if (diceChecks[6] > 1 || diceChecks[6] == 0) {
+		std::cout << "es.\n";
+	}
+	else {
+		std::cout << ".\n";
+	}
+	for (int i = 0; i <= diceVec.size(); i++) {
+		if (diceChecks[i] >= 2 && diceChecks[i] < 4) {
+			std::cout << "You have a pair of " << i << ".\n";
+		}
+		else if (diceChecks[i] >= 4 && diceChecks[i] < 6) {
+			std::cout << "You have two pairs of " << i << ".\n";
+		}
+		else if (diceChecks[i] == 6) {
+			std::cout << "You have three pairs of " << i << ".\n";
 		}
 	}
 }
