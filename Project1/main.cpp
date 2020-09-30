@@ -1,4 +1,4 @@
-#include <iostream>
+#include <iostream> //You know, for input and output.
 #include <vector>
 #include <conio.h>
 #include <stdlib.h>
@@ -10,11 +10,9 @@ void task1();
 void task2();
 void task3();
 void diceTasks();
-/*		Random number:
- 
-		srand(time(NULL));
-		rand() % MAX;
-*/
+void rollDice(std::vector <int>& diceVec, std::vector <int>& hold);
+void holdDice(std::vector <int>& diceVec, std::vector <int>& hold, int MaxDi);
+
 
 int main() {
 	
@@ -35,7 +33,7 @@ int main() {
 			task3();
 			break;
 		case '4':
-			//diceTasks();
+			diceTasks();
 			break;
 		case '5':
 			programFinished = true;
@@ -335,4 +333,173 @@ void task3() {
 		}
 	}
 
+}
+
+void diceTasks() {
+	int MaxDi = 5;
+	std::string spacer = "   ";
+	std::vector <int> dice(MaxDi, 0);
+	std::vector <int> heldDice(MaxDi, 0);
+	bool holdingDice = false;
+	bool rolled = false;
+	
+	bool doneWithTask = false;
+	while (!doneWithTask) {
+		for (int i = 0; i < dice.size(); i++) {
+			if (dice[i] != 0) {
+				rolled = true;
+			}
+			if (heldDice[i] != 0) {
+				holdingDice = true;
+			}
+		}
+		system("cls");
+		std::cout << "Welcome to the dice thing. \nPress enter to roll new dice, or Space to go back.\n";
+		if (rolled) {
+			std::cout << "Press H to hold dice.\n";
+		}
+		if (!doneWithTask && dice[0] != 0) {
+			if (rolled) {
+				std::cout << "\n";
+				for (int i = 0; i < dice.size(); i++) {
+					std::cout << spacer;
+					std::cout << dice[i];
+					if (dice[i] == heldDice[i]) {
+						std::cout << "H ";
+					}
+					else
+					{
+						std::cout << "  ";
+					}
+					std::cout << spacer;
+				}
+				std::cout << "\n";
+				for (int i = 0; i < MaxDi; i++) {
+					std::cout << "Dice " << i;
+					if ((i + 1) != MaxDi) {
+						std::cout << ",  ";
+					}
+					else {
+						std::cout << "\n";
+					}
+				}
+				std::cout << "\n";
+			}
+		}
+		switch (tolower(_getch()))
+		{
+		case '\r':
+			rollDice(dice, heldDice);
+			doneWithTask = false;
+			break;
+		case ' ':
+			doneWithTask = true;
+			break;
+		case 'h':
+			holdDice(dice, heldDice, MaxDi);
+			break;
+		default:
+			break;
+		}
+		
+	}
+	
+}
+
+void holdDice(std::vector <int>& diceVec, std::vector <int>& hold, int MaxDi) {
+	std::string spacer = "   ";
+	bool finished = false;
+	while (!finished) {
+		system("cls");
+		std::cout << "Which dice would you like to hold? Or press Space to finish holding.\n";
+		std::cout << "\n";
+		for (int i = 0; i < diceVec.size(); i++) {
+			std::cout << spacer;
+			std::cout << diceVec[i] << "  ";
+			std::cout << spacer;
+		}
+		std::cout << "\n";
+		for (int i = 0; i < MaxDi; i++) {
+			std::cout << "Dice " << i;
+			if ((i + 1) != MaxDi) {
+				std::cout << ",  ";
+			}
+			else {
+				std::cout << "\n";
+			}
+		}
+		std::cout << "\n";
+		std::cout << "Dice currently held: ";
+		for (int i = 0; i < hold.size(); i++) {
+			if (hold[i] != 0) {
+				std::cout << "Dice #" << i << ", " << hold[i];
+				if (i + 1 == hold.size()) {
+					std::cout << "\n";
+				}
+				else 
+				{
+					std::cout << ". ";
+				}
+			}
+		}
+		int holdSelection = -1;
+		switch (tolower(_getch()))
+		{
+		case '0':
+			if (diceVec[0] == hold[0]) {
+				hold[0] = 0;
+			}
+			else {
+				hold[0] = diceVec[0];
+			}
+			break;
+		case '1':
+			if (diceVec[1] == hold[1]) {
+				hold[1] = 0;
+			}
+			else {
+				hold[1] = diceVec[1];
+			}
+			break;
+		case '2':
+			if (diceVec[2] == hold[2]) {
+				hold[2] = 0;
+			}
+			else {
+				hold[2] = diceVec[2];
+			}
+			break;
+		case '3':
+			if (diceVec[3] == hold[3]) {
+				hold[3] = 0;
+			}
+			else {
+				hold[3] = diceVec[3];
+			}
+			break;
+		case '4':
+			if (diceVec[4] == hold[4]) {
+				hold[4] = 0;
+			}
+			else {
+				hold[4] = diceVec[4];
+			}
+			break;
+		case ' ':
+			finished = true;
+			break;
+		default:
+			break;
+		}	
+	}
+	
+}
+
+void rollDice(std::vector <int>& diceVec, std::vector <int>& hold) {
+	srand(time(NULL));
+	for (int i = 0; i < diceVec.size(); i++) {
+		if (hold[i] == 0) {
+			diceVec[i] = (rand() % 6) + 1;
+		}
+	}
 }
